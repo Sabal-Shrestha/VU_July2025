@@ -3,7 +3,7 @@ import urllib.request
 import time
 
 #  URL=["skipq.org","bbc.com","aljazeera.com"]
-URL =["skipq.org"]
+URL = ["skipq.org", "bbc.com", "aljazeera.com", "cnn.com", "nytimes.com"]
 NAMESPACE = "SabalProjectNameSpace"
 availabilityMetric="AVAILABILITY_METRIC"
 latencyMetric="LATENCY_METRIC"

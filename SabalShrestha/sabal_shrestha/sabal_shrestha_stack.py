@@ -25,7 +25,7 @@ class SabalShresthaStack(Stack):
             # handler="HelloWorld.lambda_handler",
             handler="WebHealthLambda.lambda_handler",
             code=_lambda.Code.from_asset("./modules"),
-            timeout=Duration.seconds(10)
+            timeout=Duration.seconds(20)
         )
         # Add permission to publish metrics to CloudWatch
         lambda_function.add_to_role_policy(
