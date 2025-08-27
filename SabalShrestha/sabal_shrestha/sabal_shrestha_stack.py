@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_events as events_,
     aws_events_targets as targets_,
     aws_cloudwatch as cloudwatch_,
+    aws_cloudwatch_actions as cw_actions
     # aws_sqs as sqs,
 )
 from constructs import Construct
@@ -66,8 +67,8 @@ class SabalShresthaStack(Stack):
         )
 
         latency_alarm = cloudwatch_.Alarm(self, "LatencyAlarm",
-            comparison_operator=cloudwatch_.ComparisonOperator.LESS_THAN_THRESHOLD,
-            threshold=0.26, 
+            comparison_operator=cloudwatch_.ComparisonOperator.GREATER_THAN_THRESHOLD,
+            threshold=0.75, 
             evaluation_periods=1,
             metric=latency_metric,
             treat_missing_data=cloudwatch_.TreatMissingData.BREACHING
