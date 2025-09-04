@@ -1,71 +1,79 @@
-# Web Health Monitoring System
+# Web Health Monitoring Stack (AWS CDK)
 
-## Project Overview
-This project implements an automated web health monitoring system using AWS CDK, Lambda, and CloudWatch. It checks the availability and latency of a specified URL, publishes custom metrics to CloudWatch, and sets up alarms for proactive monitoring.
+## Overview
+This project is an AWS CDK-based solution for real-time web health monitoring. It automatically checks the availability and latency of a specified URL, publishes custom metrics to CloudWatch, triggers alarms, sends notifications via SNS, and logs events to DynamoDB. A CloudWatch dashboard provides live visualization of your web health metrics.
 
-## Architecture
-- **AWS Lambda**: Checks URL health and publishes metrics.
-- **AWS CloudWatch**: Stores metrics and triggers alarms.
-- **AWS EventBridge**: Schedules Lambda execution every minute.
-- **AWS CDK**: Infrastructure as code for resource deployment.
-
-![Architecture Diagram](https://docs.aws.amazon.com/cdk/latest/guide/images/cdk-architecture.png)
-
-## Folder Structure
+### Architecture
 ```
-SabalShrestha/
-	app.py
-	cdk.json
-	README.md
-	requirements.txt
-	modules/
-		CloudWatch_putMetric.py
-		constants.py
-		WebHealthLambda.py
-	sabal_shrestha/
-		sabal_shrestha_stack.py
+sequenceDiagram
+	participant EventBridge
+	participant Lambda
+	participant CloudWatch
+	participant SNS
+	participant DynamoDB
+	EventBridge->>Lambda: Scheduled trigger (every minute)
+	Lambda->>CloudWatch: Put custom metrics (availability, latency)
+	CloudWatch->>SNS: Alarm triggers notification
+	SNS->>DynamoDB Lambda: Notification event
+	DynamoDB Lambda->>DynamoDB: Store notification
 ```
 
-## Implementation Details
-### Lambda Function
-- Checks URL availability (HTTP 200) and latency.
-- Publishes metrics to CloudWatch using `CloudWatchMetricPublisher`.
+## Features
+- Automated Web Health Checks (Lambda).
+- Custom CloudWatch Metrics (high-resolution, 5s) for real-time monitoring.
+- Alarms & Notifications via SNS (email subscription).
+- DynamoDB Logging of notifications for audit/history.
+- CloudWatch Dashboard for live visualization.
+- Configurable constants for URL, thresholds, and email.
 
-### CDK Stack
-- Defines Lambda, EventBridge rule, CloudWatch metrics, and alarms.
-- Uses constants for configuration.
+## Prerequisites
+- AWS account and credentials configured
+- Node.js (for CDK CLI)
+- Python 3.9+
+- AWS CDK v2 installed (`npm install -g aws-cdk`)
+- Python dependencies installed (`pip install -r requirements.txt`)
 
-### CloudWatch Monitoring
-- Metrics: `url_availability`, `url_latency` in namespace `SabalProjectNameSpace`.
-- Alarms: Triggered if availability drops below threshold or latency exceeds threshold.
+## Setup & Deployment
+```bash
+# Create and activate a virtual env (macOS/Linux)
+python3 -m venv .venv
+source .venv/bin/activate
 
-## Testing
-- Unit and integration tests for Lambda logic.
-- Manual verification in AWS Console (CloudWatch metrics and alarms).
+# Install dependencies
+pip install -r requirements.txt
 
-## Challenges & Solutions
-- **Lambda packaging issues**: Fixed by restructuring code and handler references.
-- **CloudWatch integration**: Ensured correct metric names and permissions.
-- **Code clarity**: Refactored for consistent naming and documentation.
+# Bootstrap CDK (first time only in an account/region)
+cdk bootstrap
 
-## Strengths & Limitations
-- **Strengths**: Automated, scalable, clear codebase.
-- **Limitations**: Monitors only one URL, no user dashboard.
+# Synthesize and deploy
+cdk synth
+cdk deploy
+```
 
-## Future Improvements
-- Support for multiple URLs.
-- Add notification (SNS/Email) on alarm.
-- Build a web dashboard for visualization.
+## Usage
+- Monitoring: View metrics/alarms in CloudWatch (namespace from `modules/constants.py`).
+- Notifications: SNS sends emails to the configured address.
+- Database: Notification events are stored in DynamoDB table `WebHealthTableV2`.
+- Dashboard: CloudWatch dashboard `URLMonitorDashboard` shows key charts.
 
-## Computer Ethics
-- No personal data collected.
-- IAM roles follow least privilege.
-- Transparent and responsible resource usage.
+## Customization
+- Monitored URL: `constants.URL_TO_MONITOR` in `modules/constants.py`.
+- Notification Email: Update SNS subscription in `sabal_shrestha/sabal_shrestha_stack.py`.
+- Metric Period: Metrics are published at 5s resolution; EventBridge runs the Lambda every minute.
 
-## References
-1. Amazon Web Services. (2024). AWS Lambda Developer Guide. [Link](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
-2. Amazon Web Services. (2024). AWS CloudWatch Documentation. [Link](https://docs.aws.amazon.com/cloudwatch/)
-3. Amazon Web Services. (2024). AWS CDK Documentation. [Link](https://docs.aws.amazon.com/cdk/latest/guide/home.html)
-4. Smith, J. (2022). Cloud Infrastructure Automation with AWS CDK. *Journal of Cloud Computing*, 10(2), pp. 45-60.
-5. Brown, L. & Green, P. (2023). Monitoring Web Applications in the Cloud. *International Journal of Web Engineering*, 15(1), pp. 101-115.
-6. Jones, M. (2021). Ethics in Cloud Computing. *Computing Ethics Review*, 8(3), pp. 200-215.
+## Troubleshooting
+- ModuleNotFoundError (aws_cdk): Activate venv and install requirements.
+- Duplicate construct IDs: Ensure each CDK construct ID in the stack is unique.
+- EventBridge sub-minute schedule: Not supported; keep 1-minute trigger and use 5s metric resolution.
+- Costs: High-resolution metrics (5s) can increase CloudWatch costs.
+
+## FAQ
+- Monitor multiple URLs? Extend the Lambda to iterate a list and add dimensions.
+- SMS alerts? Add an SNS SMS subscription alongside email.
+- Change thresholds? Edit alarm thresholds in `sabal_shrestha_stack.py`.
+
+## License
+MIT License
+
+## Contact
+For questions or support, contact your maintainer.
