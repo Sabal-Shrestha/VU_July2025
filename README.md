@@ -1,7 +1,7 @@
 # Web Health Monitoring Stack (AWS CDK)
 
 ## Overview
-This project is an AWS CDK-based solution for real-time web health monitoring. It automatically checks the availability and latency of a specified URL, publishes custom metrics to CloudWatch, triggers alarms, sends notifications via SNS, and logs events to DynamoDB. A CloudWatch dashboard provides live visualization of your web health metrics.
+This project is an AWS CDK-based solution for real-time web health monitoring. It checks the availability and latency of a specified URL every minute, publishes custom metrics to CloudWatch, triggers alarms, sends notifications via SNS, and logs events to DynamoDB. A CloudWatch dashboard provides live visualization of your web health metrics.
 
 ### Architecture
 ```
@@ -19,12 +19,12 @@ sequenceDiagram
 ```
 
 ## Features
-- Automated Web Health Checks (Lambda).
-- Custom CloudWatch Metrics (high-resolution, 5s) for real-time monitoring.
-- Alarms & Notifications via SNS (email subscription).
-- DynamoDB Logging of notifications for audit/history.
-- CloudWatch Dashboard for live visualization.
-- Configurable constants for URL, thresholds, and email.
+- Automated Web Health Checks (Lambda, every minute)
+- Custom CloudWatch Metrics (1-minute period)
+- Alarms & Notifications via SNS (email subscription)
+- DynamoDB Logging of notifications for audit/history
+- CloudWatch Dashboard for live visualization
+- Configurable constants for URL, thresholds, and email
 
 ## Prerequisites
 - AWS account and credentials configured
@@ -51,26 +51,26 @@ cdk deploy
 ```
 
 ## Usage
-- Monitoring: View metrics/alarms in CloudWatch (namespace from `modules/constants.py`).
-- Notifications: SNS sends emails to the configured address.
-- Database: Notification events are stored in DynamoDB table `WebHealthTableV2`.
-- Dashboard: CloudWatch dashboard `URLMonitorDashboard` shows key charts.
+- Monitoring: View metrics/alarms in CloudWatch (namespace from `modules/constants.py`)
+- Notifications: SNS sends emails to the configured address
+- Database: Notification events are stored in DynamoDB table `WebHealthTableV2`
+- Dashboard: CloudWatch dashboard `URLMonitorDashboard` shows key charts
 
 ## Customization
-- Monitored URL: `constants.URL_TO_MONITOR` in `modules/constants.py`.
-- Notification Email: Update SNS subscription in `sabal_shrestha/sabal_shrestha_stack.py`.
-- Metric Period: Metrics are published at 5s resolution; EventBridge runs the Lambda every minute.
+- Monitored URL: `constants.URL_TO_MONITOR` in `modules/constants.py`
+- Notification Email: Update SNS subscription in `sabal_shrestha/sabal_shrestha_stack.py`
+- Metric Period: Metrics and alarms use a 1-minute period; Lambda runs every minute
 
 ## Troubleshooting
-- ModuleNotFoundError (aws_cdk): Activate venv and install requirements.
-- Duplicate construct IDs: Ensure each CDK construct ID in the stack is unique.
-- EventBridge sub-minute schedule: Not supported; keep 1-minute trigger and use 5s metric resolution.
-- Costs: High-resolution metrics (5s) can increase CloudWatch costs.
+- ModuleNotFoundError (aws_cdk): Activate venv and install requirements
+- Duplicate construct IDs: Ensure each CDK construct ID in the stack is unique
+- EventBridge sub-minute schedule: Not supported; minimum is 1 minute
+- Costs: High-resolution metrics can increase CloudWatch costs
 
 ## FAQ
-- Monitor multiple URLs? Extend the Lambda to iterate a list and add dimensions.
-- SMS alerts? Add an SNS SMS subscription alongside email.
-- Change thresholds? Edit alarm thresholds in `sabal_shrestha_stack.py`.
+- Monitor multiple URLs? Extend the Lambda to iterate a list and add dimensions
+- SMS alerts? Add an SNS SMS subscription alongside email
+- Change thresholds? Edit alarm thresholds in `sabal_shrestha_stack.py`
 
 ## License
 MIT License
