@@ -14,8 +14,6 @@ class CloudWatchMetricPublisher:
                     'MetricName': metric_name,
                     'Dimensions': dimensions,
                     'Value': value,
-                    # Enable high-resolution custom metrics (1-second granularity)
-                    'StorageResolution': 1,
                 }
             ]
         )
