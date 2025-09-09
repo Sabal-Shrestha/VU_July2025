@@ -143,6 +143,7 @@ class SabalShresthaStack(Stack):
                 aws_iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),
                 aws_iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchFullAccess"),
                 aws_iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaVPCAccessExecutionRole"),
+                aws_iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSNSFullAccess"),
             ]
         )
         return lambda_role
