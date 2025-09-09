@@ -38,12 +38,10 @@ Below are the main features of the Web Health Monitoring Stack.
 	![Default Dashboard](<ScreenShots/Default Dashboard.png>)
 
 3. **Alarms & Notifications via SNS (email and SMS subscription)**
-	- Screenshot: CloudWatch alarm configuration and SNS notification received (email and SMS)
 	![Alarm Confirmation](<ScreenShots/Alarm Subscription Confirmation Email.png>)
 	![Alarm Confirmed](<ScreenShots/Alarm Subscription Confirmed Email.png>)
 
 4. **DynamoDB Logging of metrics for audit/history**
-	- Screenshot: DynamoDB table showing notification records
 	![DynamoDB Table 1](<ScreenShots/DynamoDB Table URL 1.png>)
 	![DynamoDB Table 2](<ScreenShots/DynamoDB Table URL 2.png>)
 
@@ -56,13 +54,11 @@ Below are the main features of the Web Health Monitoring Stack.
 * Python dependencies installed (`pip install -r requirements.txt`)
 
 ## Setup & Deployment
-```bash
-> **Note:** When you open the project, your workspace will be at `VU_July2025`. For all terminal commands (setup, deployment, etc.), make sure your terminal is in the `SabalShrestha` directory:
+**Note:** 
+When you open the project, your workspace will be at "VU_July2025". For all terminal commands (setup, deployment, etc.), make sure your terminal is in the "SabalShrestha" directory:
 
 ```bash
 cd SabalShrestha
-```
-
 Then run:
 python3 -m venv .venv
 source .venv/bin/activate
