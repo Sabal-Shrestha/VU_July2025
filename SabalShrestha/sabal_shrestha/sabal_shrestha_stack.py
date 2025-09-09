@@ -30,8 +30,7 @@ class SabalShresthaStack(Stack):
             code=_lambda.Code.from_asset('./modules'),
             handler='WebHealthLambda.lambda_handler',
             runtime=_lambda.Runtime.PYTHON_3_9,
-            role=webealthlambda_role,
-            function_name="WebHealthLambda"
+            role=webealthlambda_role
         )
         web_health_lambda.apply_removal_policy(RemovalPolicy.DESTROY)
 
@@ -117,7 +116,6 @@ class SabalShresthaStack(Stack):
             handler='DBLambda.lambda_handler',
             runtime=_lambda.Runtime.PYTHON_3_9,
             role=DBlambda_role,
-            function_name="DBLambda",
             timeout=Duration.seconds(20),
             environment={
                 "TABLE_NAME": db_table.table_name,

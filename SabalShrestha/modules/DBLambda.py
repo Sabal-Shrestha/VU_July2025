@@ -1,51 +1,61 @@
+
 import os
 import boto3
 import uuid
 from decimal import Decimal
+import constants
+
+def get_latest_metric(metric_name, namespace, url):
+    client = boto3.client('cloudwatch')
+    response = client.get_metric_data(
+        MetricDataQueries=[
+            {
+                'Id': 'm1',
+                'MetricStat': {
+                    'Metric': {
+                        'Namespace': namespace,
+                        'MetricName': metric_name,
+                        'Dimensions': [
+                            {'Name': 'URL', 'Value': url}
+                        ]
+                    },
+                    'Period': 60,
+                    'Stat': 'Average'
+                },
+                'ReturnData': True
+            }
+        ],
+        StartTime=datetime.utcnow() - timedelta(minutes=10),
+        EndTime=datetime.utcnow(),
+        ScanBy='TimestampDescending',
+        MaxDatapoints=1
+    )
+    values = response['MetricDataResults'][0]['Values']
+    return values[0] if values else None
+
+from datetime import datetime, timedelta
 
 def lambda_handler(event, context):
+    url = constants.URL_TO_MONITOR
+    namespace = constants.URL_MONITOR_NAMESPACE
+    latency_metric = constants.URL_MONITOR_METRIC_NAME_LATENCY
+    availability_metric = constants.URL_MONITOR_METRIC_NAME_AVAILABILITY
 
-    # First try to use previous values from event
-    latency = event.get('latency')
-    availability = event.get('availability')
-    if latency is not None and availability is not None:
-        print("Using previously tested values from event, not invoking WebHealthLambda.")
-    else:
-        print("Previous values not found, invoking WebHealthLambda to get fresh metrics.")
-        lambda_client = boto3.client('lambda')
-        webhealth_lambda_name = os.environ.get('WEBHEALTH_LAMBDA_NAME', 'WebHealthLambda')
-        try:
-            response = lambda_client.invoke(
-                FunctionName=webhealth_lambda_name,
-                InvocationType='RequestResponse',
-                Payload=b'{}'
-            )
-            payload = response['Payload'].read()
-            import json
-            metrics = json.loads(payload)
-            latency = metrics.get('latency')
-            availability = metrics.get('availability')
-        except Exception as e:
-            print(f"Error invoking WebHealthLambda: {e}")
-            latency = None
-            availability = None
+    latency = get_latest_metric(latency_metric, namespace, url)
+    availability = get_latest_metric(availability_metric, namespace, url)
 
     item = {
         'id': str(uuid.uuid4())
     }
     if latency is not None:
-        # Convert float to Decimal for DynamoDB
         item['latency'] = Decimal(str(latency))
     if availability is not None:
-        # Convert float/int to Decimal for DynamoDB
         item['availability'] = Decimal(str(availability))
 
-    # Get DynamoDB table name from environment variable
     table_name = os.environ.get('TABLE_NAME', 'WebHealthTableV2')
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table_name)
 
-    # Write latency and availability to DynamoDB
     try:
         table.put_item(Item=item)
         print(f"Successfully wrote to DynamoDB: {item}")
