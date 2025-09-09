@@ -36,30 +36,36 @@ def get_latest_metric(metric_name, namespace, url):
 from datetime import datetime, timedelta
 
 def lambda_handler(event, context):
-    url = constants.URL_TO_MONITOR
     namespace = constants.URL_MONITOR_NAMESPACE
     latency_metric = constants.URL_MONITOR_METRIC_NAME_LATENCY
     availability_metric = constants.URL_MONITOR_METRIC_NAME_AVAILABILITY
 
-    latency = get_latest_metric(latency_metric, namespace, url)
-    availability = get_latest_metric(availability_metric, namespace, url)
+    items = []
+    for url in constants.URLS_TO_MONITOR:
+        latency = get_latest_metric(latency_metric, namespace, url)
+        availability = get_latest_metric(availability_metric, namespace, url)
 
-    item = {
-        'id': str(uuid.uuid4())
-    }
-    if latency is not None:
-        item['latency'] = Decimal(str(latency))
-    if availability is not None:
-        item['availability'] = Decimal(str(availability))
+        item = {
+            'id': str(uuid.uuid4()),
+            'url': url
+        }
+        if latency is not None:
+            item['latency'] = Decimal(str(latency))
+        if availability is not None:
+            item['availability'] = Decimal(str(availability))
+        items.append(item)
 
     table_name = os.environ.get('TABLE_NAME', 'WebHealthTableV2')
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table_name)
 
-    try:
-        table.put_item(Item=item)
-        print(f"Successfully wrote to DynamoDB: {item}")
-        return {'status': 'success', 'item': item}
-    except Exception as e:
-        print(f"Error writing to DynamoDB: {e}")
-        return {'status': 'error', 'reason': str(e)}
+    results = []
+    for item in items:
+        try:
+            table.put_item(Item=item)
+            print(f"Successfully wrote to DynamoDB: {item}")
+            results.append({'status': 'success', 'item': item})
+        except Exception as e:
+            print(f"Error writing to DynamoDB: {e}")
+            results.append({'status': 'error', 'item': item, 'reason': str(e)})
+    return results

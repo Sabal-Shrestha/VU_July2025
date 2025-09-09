@@ -30,7 +30,8 @@ class SabalShresthaStack(Stack):
             code=_lambda.Code.from_asset('./modules'),
             handler='WebHealthLambda.lambda_handler',
             runtime=_lambda.Runtime.PYTHON_3_9,
-            role=webealthlambda_role
+            role=webealthlambda_role,
+            timeout=Duration.seconds(20)
         )
         web_health_lambda.apply_removal_policy(RemovalPolicy.DESTROY)
 
@@ -41,23 +42,28 @@ class SabalShresthaStack(Stack):
                             schedule=lambda_schedule, targets=[lambda_target])
         rule.apply_removal_policy(RemovalPolicy.DESTROY)
 
-        availability_metric = cloudwatch_.Metric(
-            namespace=constants.URL_MONITOR_NAMESPACE,
-            metric_name=constants.URL_MONITOR_METRIC_NAME_AVAILABILITY,
-            dimensions_map={"URL": constants.URL_TO_MONITOR},
-            label='URL Availability',
-            statistic="Average",
-            period=Duration.minutes(1),
-        )
-
-        latency_metric = cloudwatch_.Metric(
-            namespace=constants.URL_MONITOR_NAMESPACE,
-            metric_name=constants.URL_MONITOR_METRIC_NAME_LATENCY,
-            dimensions_map={"URL": constants.URL_TO_MONITOR},
-            label='URL Latency',
-            statistic="Average",
-            period=Duration.minutes(1),
-        )
+        self.metrics = {}
+        for url in constants.URLS_TO_MONITOR:
+            availability_metric = cloudwatch_.Metric(
+                namespace=constants.URL_MONITOR_NAMESPACE,
+                metric_name=constants.URL_MONITOR_METRIC_NAME_AVAILABILITY,
+                dimensions_map={"URL": url},
+                label=f'{url} Availability',
+                statistic="Average",
+                period=Duration.minutes(1),
+            )
+            latency_metric = cloudwatch_.Metric(
+                namespace=constants.URL_MONITOR_NAMESPACE,
+                metric_name=constants.URL_MONITOR_METRIC_NAME_LATENCY,
+                dimensions_map={"URL": url},
+                label=f'{url} Latency',
+                statistic="Average",
+                period=Duration.minutes(1),
+            )
+            self.metrics[url] = {
+                'availability': availability_metric,
+                'latency': latency_metric
+            }
 
         availability_alarm = cloudwatch_.Alarm(self, "WebHealthAvailabilityAlarm",
             comparison_operator=cloudwatch_.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
@@ -76,6 +82,7 @@ class SabalShresthaStack(Stack):
         )
         topic = sns.Topic(self, "AlarmNotification")
         topic.add_subscription(subscriptions.EmailSubscription("sabalshrestha427@gmail.com"))
+        topic.add_subscription(subscriptions.SmsSubscription("+61482059736"))
 
         availability_alarm.add_alarm_action(cw_actions.SnsAction(topic))
         latency_alarm.add_alarm_action(cw_actions.SnsAction(topic))
