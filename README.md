@@ -59,7 +59,10 @@ When you open the project, your workspace will be at "VU_July2025". For all term
 
 ```bash
 cd SabalShrestha
+```
+
 Then run:
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -75,7 +78,7 @@ cdk deploy
 * Dashboard: CloudWatch dashboard `URLMonitorDashboard` shows key charts
 
 ## Customization
-* Monitored URL: `constants.URL_TO_MONITOR` in `modules/constants.py`
+* Monitored URL: `constants.URLs_TO_MONITOR` in `modules/constants.py`
 * Notification Email/SMS: Update SNS subscriptions in `sabal_shrestha/sabal_shrestha_stack.py`
 * Alarm thresholds: Edit in `sabal_shrestha_stack.py`
 * Metric Period: Metrics and alarms use a 1-minute period; Lambda runs every minute
