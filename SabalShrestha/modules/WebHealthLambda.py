@@ -1,8 +1,6 @@
 import urllib.request
 import time
-# Import helper class for publishing metrics to CloudWatch
 from CloudWatch_putMetric import CloudWatchMetricPublisher
-# Import project constants
 import constants
 
 def get_url_latency(url):

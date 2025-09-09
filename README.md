@@ -75,7 +75,7 @@ cdk deploy
 * Monitoring: View metrics/alarms in CloudWatch (namespace from `modules/constants.py`)
 * Notifications: SNS sends emails to the configured address
 * Database: Notification events are stored in DynamoDB table `WebHealthTableV2`
-* Dashboard: CloudWatch dashboard `URLMonitorDashboard` shows key charts
+* Dashboard: CloudWatch dashboard `CloudWatch-Default` shows key charts
 
 ## Customization
 * Monitored URL: `constants.URLs_TO_MONITOR` in `modules/constants.py`
@@ -85,15 +85,7 @@ cdk deploy
 
 ## Troubleshooting
 * ModuleNotFoundError (aws_cdk): Activate venv and install requirements
-* Duplicate construct IDs: Ensure each CDK construct ID in the stack is unique
-* EventBridge sub-minute schedule: Not supported; minimum is 1 minute
-* Costs: High-resolution metrics can increase CloudWatch costs
 
-## FAQ
-**SMS alerts?** Supported. Add your phone number as an SNS SMS subscription in `sabal_shrestha/sabal_shrestha_stack.py`.
-**Change thresholds?** Edit alarm thresholds in `sabal_shrestha_stack.py`.
 
-## License
-MIT License
 
 
