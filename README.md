@@ -30,42 +30,42 @@ sequenceDiagram
 
 Below are the main features of the Web Health Monitoring Stack.
 
-1. **Web Health Checks**
+1. **Custom Web Health Checks**
 	![WebHealth Lambda Output](<ScreenShots/WebHealthLambda Output.png>)
 	![DBLambda Output](<ScreenShots/DBLambda Output.png>)
 
-2. **Custom CloudWatch Metrics (availability, latency)**
+2. **CloudWatch Metrics Dashboard (availability, latency)**
 	![Default Dashboard](<ScreenShots/Default Dashboard.png>)
 
 3. **Alarms & Notifications via SNS (email and SMS subscription)**
 	![Alarm Confirmation](<ScreenShots/Alarm Subscription Confirmation Email.png>)
 	![Alarm Confirmed](<ScreenShots/Alarm Subscription Confirmed Email.png>)
+	![Alarm Metrics Availability](<ScreenShots/Alarm Metrics for Availability.png>)
+	![Alarm Metrics Latency](<ScreenShots/Alarm Metrics for Latency.png>)
 
 4. **DynamoDB Logging of metrics for audit/history**
 	![DynamoDB Table 1](<ScreenShots/DynamoDB Table URL 1.png>)
 	![DynamoDB Table 2](<ScreenShots/DynamoDB Table URL 2.png>)
 
 
-## Prerequisites
+## Setup & Deployment
+**Note:** 
+When you open the project, your workspace will be at "VU_July2025". For all terminal commands (setup, deployment, etc.), make sure your terminal is in the "SabalShrestha" directory:
+```bash
+cd SabalShrestha
+```
+
+# Prerequisites
 * AWS account and credentials configured
 * Node.js (for CDK CLI)
 * Python 3.9+
 * AWS CDK v2 installed (`npm install -g aws-cdk`)
 * Python dependencies installed (`pip install -r requirements.txt`)
 
-## Setup & Deployment
-**Note:** 
-When you open the project, your workspace will be at "VU_July2025". For all terminal commands (setup, deployment, etc.), make sure your terminal is in the "SabalShrestha" directory:
-
-```bash
-cd SabalShrestha
-```
-
 Then run:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
 cdk bootstrap
 cdk synth
 cdk deploy
@@ -86,6 +86,5 @@ cdk deploy
 ## Troubleshooting
 * ModuleNotFoundError (aws_cdk): Activate venv and install requirements
 
-
-
-
+**Note:** 
+Just Always Smile and Seize the Day.
