@@ -42,6 +42,8 @@ Below are the main features of the Web Health Monitoring Stack.
 	![Alarm Confirmed](<ScreenShots/Alarm Subscription Confirmed Email.png>)
 	![Alarm Metrics Availability](<ScreenShots/Alarm Metrics for Availability.png>)
 	![Alarm Metrics Latency](<ScreenShots/Alarm Metrics for Latency.png>)
+	![Alarm Popped Latency](<ScreenShots/Alarm popped for Latency.png>)
+	![Alarm Popped Availability](<ScreenShots/Alarm Popped for Availability.png>)
 
 4. **DynamoDB Logging of metrics for audit/history**
 	![DynamoDB Table 1](<ScreenShots/DynamoDB Table URL 1.png>)
